@@ -7,6 +7,7 @@ forEach :
 الـ forEach مفيهاش return وبالتالي بترجع undefined
 كمان مبنستخدمش فيها break أو continue، ولا ينفع نوقف التنفيذ لأنها لازم تمر على كل العناصر اللي في الـ list
 وبرضه مبتنفعش تُستخدم مع objects أو strings أو sets أو maps
+مش بيدعم الasync  بمعنى مش هيستنى fetch يخلص 
 
 arr.forEach((item) => console.log(item));
 
@@ -14,6 +15,8 @@ arr.forEach((item) => console.log(item));
 for...of : 
 بتقوم بنفس دور الـ for loop، وبتعمل loop على كل العناصر داخل الـ array بس على القيم مش الـ index
 وكمان بتسمح باستخدام continue و break عادي
+بتسمح باستخدام fetch للداتا و بتعمل pause لحد م الpromise يكمل 
+
 
 for (let item of arr) {
   console.log(item);
