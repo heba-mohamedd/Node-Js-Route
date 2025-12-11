@@ -40,7 +40,11 @@ console.log(path.isAbsolute("/home/user/file.txt"));
 // 7. Write a function that joins multiple segments (0.5 Grade)
 // • Input:"src","components", "App.js"
 // • Output Example: src/components/App.js
-console.log(path.join("src", "components", "App.js"));
+function joinSegments(...segments) {
+  return path.join(...segments);
+}
+console.log(joinSegments("src", "components", "App.js"));
+//console.log(path.join("src", "components", "App.js"));
 
 // 8. Write a function that resolves a relative path to an absolute one. (0.5 Grade)
 // • Input Example: ./index.js
