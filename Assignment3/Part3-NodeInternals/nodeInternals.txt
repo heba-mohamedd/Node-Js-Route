@@ -1,0 +1,46 @@
+1. What is the Node.js Event Loop?
+The Event Loop is what made Node.js non-blocking and asynchronous, even though JavaScript is Single Thread,
+because it is responsible for monitoring the Call Stack, and as soon as it is empty, it starts transferring the 
+Callback that is next in line to be executed and is highest in priority from the Event Queue to the Call Stack in order to be executed.
+
+/******************************************************************************************************************/
+2. What is Libuv and What Role Does It Play in Node.js? 
+libuv is a library written in C, used by Node.js to handle asynchronous I/O operations. 
+libuv provides the Event Loop and Thread Pool mechanism, which allows Node.js to operate in a non-blocking manner even though it uses a single main thread.
+/******************************************************************************************************************/
+3. How Does Node.js Handle Asynchronous Operations Under the Hood?
+Async operation >>>
+The operation is placed in the Call Stack.
+The main thread notices the async operation and will send it to offloading.
+Offloading (sends the operation to the thread pool or OS kernel depending on the type of operation).
+When threads finish this operation, they put the callback in the Event Queue.
+The Event Loop sees the Call Stack empty.
+The Event Loop will go through the phases to determine the priority of the operation.
+It moves the callback to the Call Stack.
+Executes the callback.
+
+/******************************************************************************************************************/
+4. What is the Difference Between the Call Stack, Event Queue, and Event Loop in Node.js? 
+Call Stack ---> it is called Execution Stack. it is the place where javaScript puts all function calls that are ready to execute LIFO (Last In, First Out).
+Synchronous code is executed immediately on the stack ,but asynchronous code is pushed in Queue When the stack becomes empty, the event loop moves tasks from the queue to the stack for execution.
+Event Queue ---> It is a place to store asynchronous callbacks once they are ready to be executed. When the thread pool finishes executing the operation, it returns the callback and it's added to the Event Queue.
+Event Loop  ---> it monitors the Call Stack, and when it's empty, it takes the first callback (Depend on priority (Microtasks , Macrotasks)) from the Event Queue and adds it to the Call Stack to be executed. 
+
+/******************************************************************************************************************/
+5. What is the Node.js Thread Pool and How to Set the Thread Pool Size? 
+The Thread Pool is managed by the libuv (C++ library), which is responsible for handling asynchronous operations.
+It executes a set of operations concurrently (parallel), with each operation being completely independent of the others.
+The default number of threads on a device is 4. 
+This number can be increased according to the application's needs through the UV_THREADPOOL_SIZE environment variable.
+
+$env:UV_THREADPOOL_SIZE=6; node app.js    ------->>>   in powershell
+set UV_THREADPOOL_SIZE=6 && node app.js   ------->>>   Cmd (command Prompt)
+/******************************************************************************************************************/
+6. How Does Node.js Handle Blocking and Non-Blocking Code Execution? 
+Blocking Code Execution:  When executing a specific operation, the Main Thread stops receiving any other
+requests and waits for the current operation to finish before returning the response.
+
+Non-Blocking Code Execution : The Main Thread does not wait for the operation to finish, but sends it to libuv to be executed in the background by the thread pool. 
+After execution, the callback is moved to the Event Queue. 
+When the Call Stack is cleared of operations, the Event Loop picks the appropriate operation and moves it to the Call Stack for immediate execution.
+During this cycle, the Main Thread remains available to receive and execute other requests immediately.
