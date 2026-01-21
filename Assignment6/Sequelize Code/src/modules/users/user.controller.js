@@ -1,6 +1,5 @@
 import { Router } from "express";
 import * as US from "./user.service.js";
-import { signupValidation } from "../../middleware/signupValidation.js";
 const userRouter = Router();
 
 userRouter.post("/signup", US.signUp);
