@@ -1,0 +1,153 @@
+➡️ use books_db
+
+🛑1. Create an explicit collection named “books” with a validation rule to ensure that each 
+document has a non-empty “title” field.
+
+➡️db.createCollection("books", { validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      properties: {
+        title: {
+          bsonType: "string",
+          minLength: 1,
+        }
+      }
+    }}})
+
+OR
+
+➡️db.createCollection("books", {
+  validator: {
+    $and: [
+      { title: { $type: "string" } }    ]
+  }
+});
+
+
+🛑2. Create an implicit collection by inserting data directly into a new collection named 
+“authors”. 
+
+➡️db.authors.insertOne({name:"Heba",nationality:"Egyptian"})
+
+🛑3. Create a capped collection named “logs” with a size limit of 1MB.
+
+➡️db.createCollection( "logs", { capped: true, size: 1048576 } )
+
+🛑4. Create an index on the books collection for the title field. 
+
+➡️db.books.createIndex({title:1})
+
+🛑5. Insert one document into the books collection. 
+
+➡️db.books.insertOne({title:"Book1",author:"Ali",Year:"1937",genres:["fantasy" , "adventure"]})
+
+🛑6. Insert multiple documents into the books collection with at least three records. (0.5 Grade) 
+
+➡️db.books.insertMany([{ 
+  title: "The Silent River",
+  author: "Ahmed Hassan",
+  year: 2005,
+  genres: ["drama", "mystery"]
+},
+{ 
+  title: "Desert Dreams",
+  author: "Mona Adel",
+  year: 2012,
+  genres: ["romance", "drama"]
+},
+{ 
+  title: "Beyond the Stars",
+  author: "Omar Khaled",
+  year: 2020,
+  genres: ["science fiction", "adventure"]
+},
+{ 
+  title: "Brave New World",
+  author: "Sara Mahmoud",
+  year: 1998,
+  genres: ["historical", "fiction"]
+},
+{ 
+  title: "Shadow Code",
+  author: "Youssef Amin",
+  year: 2018,
+  genres: ["thriller", "technology"]
+},
+{
+  title: "Future",
+  author: "George Orweil",
+  year: 2020,
+  genres: ["science fiction"]
+}
+])
+
+
+🛑7. Insert a new log into the logs collection.
+
+➡️db.logs.insertOne({book_id:ObjectId("697d42e92f9e9b65257eb837") , action:"borrowed"})
+
+🛑8. Update the book with title “Future” change the year to be 2022. (0.5 Grade) 
+
+➡️db.books.updateOne({title:"Future"},{$set:{year:2022}})
+
+🛑9. Find a Book with title “Brave New World”.
+
+➡️db.books.find({title:"Brave New World"})
+
+🛑10. Find all books published between 1990 and 2010.
+
+➡️db.books.find({ year: { $gte: 1990, $lte: 2010 } })
+
+🛑11. Find books where the genre includes "Science Fiction".
+
+➡️db.books.find({ genres: "Science Fiction"})
+OR
+➡️db.books.find({
+  genres: { $elemMatch: { $eq: "science fiction" } }
+})
+
+
+🛑12. Skip the first two books, limit the results to the next three, sorted by year in descending 
+order.
+
+➡️db.books.find().sort({ year : -1 }).skip( 2 ).limit( 3 )
+OR
+➡️db.books.aggregate([{$sort:{year:-1}},{$skip:2},{$limit:3}])
+
+🛑13. Find books where the year field stored as an integer.
+
+➡️db.books.find({ "year": { $type: "int" } })
+
+🛑14. Find all books where the genres field does not include any of the genres "Horror" or "Science Fiction".
+
+➡️db.books.find({"genres":{$not:{$in:["Horror","Science Fiction"]}}})
+Or
+➡️db.books.find({"genres":{$nin:["Horror","Science Fiction"]}})
+
+🛑15. Delete all books published before 2000.
+
+➡️db.books.deleteMany({"year":{$lt:2000}})
+
+🛑16. Using aggregation Functions, Filter books published after 2000 and sort them by year descending.
+
+➡️db.books.aggregate([{$match:{year:{$gt:2000}}},{$sort:{year:-1}}])
+
+🛑17. Using aggregation functions, Find all books published after the year 2000. For each 
+matching book, show only the title, author, and year fields.
+
+➡️db.books.aggregate([{$match:{year:{$gt:2000}}},{$project:{title:1 , author:1 , year:1 , _id:0}}])
+
+🛑18. Using aggregation functions,break an array of genres into separate documents.
+
+➡️db.books.aggregate([{$project:{title:1,genres:1,_id:0}},{$unwind:"$genres"}])
+
+🛑19. Using aggregation functions, Join the books collection with the logs collection.
+
+➡️db.logs.aggregate([{$lookup:{
+from:"books",
+  localField:"book_id",
+  foreignField:"_id",
+  pipeline:[{$project:{title:1 , author:1 , year:1 , _id:0}}],
+  as:"book_details"
+}},{$project:{_id:0 , action:1  ,book_details:1 }}])
+
